@@ -1,41 +1,138 @@
-<html>
+<!DOCTYPE html>
+<html lang="tr">
 
 <head>
-    <title>Tetris Game</title>
+    <meta charset="UTF-8">
+    <title>HaTetris </title>
     <style>
-        button:hover {
-            background-color: #bca0dc !important;
+        body {
+            background: radial-gradient(circle, #3a6332 0%, #11270c 100%);
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+        }
+        .game-wrapper {
+            display: flex;
+            align-items: flex-start;
+            gap: 25px;
+            background: rgba(17, 39, 12, 0.6);
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(58, 99, 50, 0.25);
+            border: 2px solid rgba(139, 195, 74, 0.15);
+        }
+        .canvas-container {
+            position: relative;
+            box-shadow: 0 0 25px rgba(139, 195, 74, 0.4);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 4px solid #6b9e59;
         }
 
-        button:active {
-            background-color: #9969d0 !important;
+        #canvas {
+            display: block;
+            background-color: #c2dfb8;
+        }
+
+        .side-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 200px;
+        }
+
+        .panel-box {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 2px solid rgba(139, 195, 74, 0.3);
+            padding: 15px;
+            text-align: center;
+            box-shadow: inset 0 0 10px rgba(139, 195, 74, 0.1);
+        }
+
+        .panel-box h3 {
+            color: #a3e38c;
+            margin: 0 0 10px 0;
+            font-size: 16px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        canvas.side-canvas {
+            background: rgba(194, 223, 184, 0.15);
+            border-radius: 8px;
+            display: block;
+            margin: 0 auto;
+        }
+        .btn-reset {
+            width: 100%;
+            height: 55px;
+            border-radius: 12px;
+            background-color: #558b2f;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(85, 139, 47, 0.4);
+        }
+
+        .btn-reset:hover {
+            background-color: #7cb342 !important;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(124, 179, 66, 0.6);
+        }
+
+        .btn-reset:active {
+            background-color: #33691e !important;
+            transform: translateY(1px);
+        }
+
+        .btn-reset svg {
+            width: 32px;
+            height: 32px;
+            fill: #ffffff;
         }
     </style>
 </head>
 
 <body>
-    <canvas id='canvas' width="400" height="800"></canvas>
-    <canvas id='nextShapeCanvas' width="200" height="200" style="position: absolute; top: 10">
-    </canvas>
-    <canvas id='scoreCanvas' width="200" height="200" style="position: absolute; top: 220">
-    </canvas>
 
-    <button style="
-        width: 64px;
-        height: 64px;
-        border-radius: 50%;
-        background-color: gray;
-        border: 0px;
-      " onClick="resetVars()">
-        <svg height="100%" version="1.1" viewBox="0 0 36 36" width="100%">
-            <use class="ytp-svg-shadow" xlink:href="#ytp-id-54"></use>
-            <path class="ytp-svg-fill" fill="#ffffff"
-                d="M 18,11 V 7 l -5,5 5,5 v -4 c 3.3,0 6,2.7 6,6 0,3.3 -2.7,6 -6,6 -3.3,0 -6,-2.7 -6,-6 h -2 c 0,4.4 3.6,8 8,8 4.4,0 8,-3.6 8,-8 0,-4.4 -3.6,-8 -8,-8 z"
-                id="ytp-id-54"></path>
-        </svg>
-    </button>
+    <div class="game-wrapper">
+        <div class="canvas-container">
+            <canvas id="canvas" width="400" height="800"></canvas>
+        </div>
+
+        <div class="side-panel">
+            <div class="panel-box">
+                <h3>Sıradaki</h3>
+                <canvas id="nextShapeCanvas" class="side-canvas" width="160" height="160"></canvas>
+            </div>
+
+            <div class="panel-box">
+                <h3>Skor</h3>
+                <canvas id="scoreCanvas" class="side-canvas" width="160" height="80"></canvas>
+            </div>
+
+            <button class="btn-reset" onClick="resetVars()" title="Yeniden Başlat">
+                <svg viewBox="0 0 36 36">
+                    <path
+                        d="M 18,11 V 7 l -5,5 5,5 v -4 c 3.3,0 6,2.7 6,6 0,3.3 -2.7,6 -6,6 -3.3,0 -6,-2.7 -6,-6 h -2 c 0,4.4 3.6,8 8,8 4.4,0 8,-3.6 8,-8 0,-4.4 -3.6,-8 -8,-8 z">
+                    </path>
+                </svg>
+            </button>
+        </div>
+    </div>
+
     <img id="image" src="rotations.png" style="display: none;" />
-    <script src="tetris.js"> </script>
+
+    <script src="tetris.js"></script>
 </body>
 
 </html>

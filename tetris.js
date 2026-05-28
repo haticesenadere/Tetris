@@ -3,20 +3,24 @@ class Tetris {
         this.imageX = imageX;
         this.imageY = imageY;
         this.template = template;
-        this.x = squareCountX / 2;
+        this.x = Math.floor(squareCountX / 2) - 1;
         this.y = 0;
+    }
+
+    getTruncedPosition() {
+        return { x: Math.trunc(this.x), y: Math.trunc(this.y) }
     }
 
     checkBottom() {
         for (let i = 0; i < this.template.length; i++) {
-            for (let j = 0; j < this.template.length; j++) {
+            for (let j = 0; j < this.template[i].length; j++) {
                 if (this.template[i][j] == 0) continue;
                 let realX = i + this.getTruncedPosition().x;
                 let realY = j + this.getTruncedPosition().y;
                 if (realY + 1 >= squareCountY) {
                     return false;
                 }
-                if (gameMap[realY + 1][realX].imageX != -1) {
+                if (gameMap[realY + 1] && gameMap[realY + 1][realX] && gameMap[realY + 1][realX].imageX != -1) {
                     return false;
                 }
             }
@@ -24,19 +28,16 @@ class Tetris {
         return true;
     }
 
-    getTruncedPosition() {
-        return { x: Math.trunc(this.x), y: Math.trunc(this.y) }
-    }
     checkLeft() {
         for (let i = 0; i < this.template.length; i++) {
-            for (let j = 0; j < this.template.length; j++) {
+            for (let j = 0; j < this.template[i].length; j++) {
                 if (this.template[i][j] == 0) continue;
                 let realX = i + this.getTruncedPosition().x;
                 let realY = j + this.getTruncedPosition().y;
                 if (realX - 1 < 0) {
                     return false;
                 }
-                if (gameMap[realY][realX - 1].imageX != -1) return false;
+                if (gameMap[realY] && gameMap[realY][realX - 1] && gameMap[realY][realX - 1].imageX != -1) return false;
             }
         }
         return true;
@@ -44,14 +45,14 @@ class Tetris {
 
     checkRight() {
         for (let i = 0; i < this.template.length; i++) {
-            for (let j = 0; j < this.template.length; j++) {
+            for (let j = 0; j < this.template[i].length; j++) {
                 if (this.template[i][j] == 0) continue;
                 let realX = i + this.getTruncedPosition().x;
                 let realY = j + this.getTruncedPosition().y;
                 if (realX + 1 >= squareCountX) {
                     return false;
                 }
-                if (gameMap[realY][realX + 1].imageX != -1) return false;
+                if (gameMap[realY] && gameMap[realY][realX + 1] && gameMap[realY][realX + 1].imageX != -1) return false;
             }
         }
         return true;
@@ -123,43 +124,14 @@ const sctx = scoreCanvas.getContext("2d");
 const squareCountX = canvas.width / size;
 const squareCountY = canvas.height / size;
 
-
-const shapes = [
-    new Tetris(0, 120, [
-        [0, 1, 0],
-        [0, 1, 0],
-        [1, 1, 0],
-    ]),
-    new Tetris(0, 96, [
-        [0, 0, 0],
-        [1, 1, 1],
-        [0, 1, 0],
-    ]),
-    new Tetris(0, 72, [
-        [0, 1, 0],
-        [0, 1, 0],
-        [0, 1, 1],
-    ]),
-    new Tetris(0, 48, [
-        [0, 0, 0],
-        [0, 1, 1],
-        [1, 1, 0],
-    ]),
-    new Tetris(0, 24, [
-        [0, 0, 1, 0],
-        [0, 0, 1, 0],
-        [0, 0, 1, 0],
-        [0, 0, 1, 0],
-    ]),
-    new Tetris(0, 0, [
-        [1, 1],
-        [1, 1],
-    ]),
-    new Tetris(0, 48, [
-        [0, 0, 0],
-        [1, 1, 0],
-        [0, 1, 1],
-    ]),
+const shapesData = [
+    { imageX: 0, imageY: 120, template: [[0, 1, 0], [0, 1, 0], [1, 1, 0]] },
+    { imageX: 0, imageY: 96,  template: [[0, 0, 0], [1, 1, 1], [0, 1, 0]] },
+    { imageX: 0, imageY: 72,  template: [[0, 1, 0], [0, 1, 0], [0, 1, 1]] },
+    { imageX: 0, imageY: 48,  template: [[0, 0, 0], [0, 1, 1], [1, 1, 0]] },
+    { imageX: 0, imageY: 24,  template: [[0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 1, 0]] },
+    { imageX: 0, imageY: 0,   template: [[1, 1], [1, 1]] },
+    { imageX: 0, imageY: 48,  template: [[0, 0, 0], [1, 1, 0], [0, 1, 1]] }
 ];
 
 let gameMap;
@@ -168,7 +140,7 @@ let currentShape;
 let nextShape;
 let score;
 let initialTwoDarr;
-let whiteLineThickness = 4;
+let whiteLineThickness = 2;
 
 
 
@@ -205,12 +177,15 @@ let update = () => {
         currentShape.y += 1;
     }
     else {
-        for (let k = 0; k < currentShape.template.length; k++) {
-            for (let l = 0; l < currentShape.template.length; l++) {
+      for (let k = 0; k < currentShape.template.length; k++) {
+            for (let l = 0; l < currentShape.template[k].length; l++) {
                 if (currentShape.template[k][l] == 0) continue;
-                gameMap[currentShape.getTruncedPosition().y + l][
-                    currentShape.getTruncedPosition().x + k
-                ] = { imageX: currentShape.imageX, imageY: currentShape.imageY };
+                let targetY = currentShape.getTruncedPosition().y + l;
+                let targetX = currentShape.getTruncedPosition().x + k;
+                
+                if (targetY >= 0 && targetY < squareCountY) {
+                    gameMap[targetY][targetX] = { imageX: currentShape.imageX, imageY: currentShape.imageY };
+                }
             }
         }
 
@@ -230,25 +205,17 @@ let drawRect = (x, y, width, height, color) => {
 };
 
 let drawBackGround = () => {
-    drawRect(0, 0, canvas.width, canvas.height, "#bca0dc");
-    for (let i = 0; i < squareCountX + 1; i++) {
-        drawRect(size * i - whiteLineThickness,
-            0,
-            whiteLineThickness,
-            canvas.height,
-            "white"
-        );
+    drawRect(0, 0, canvas.width, canvas.height, "#98b98d");
+    ctx.strokeStyle = "rgba(0, 0, 0, 0.04)";
+    ctx.lineWidth = whiteLineThickness;
+    for (let i = 0; i <= squareCountX; i++) {
+        ctx.beginPath(); ctx.moveTo(size * i, 0); ctx.lineTo(size * i, canvas.height); ctx.stroke();
     }
-    for (let i = 0; i < squareCountY + 1; i++) {
-        drawRect(
-            0,
-            size * i - whiteLineThickness,
-            canvas.width,
-            whiteLineThickness,
-            "white"
-        );
+    for (let i = 0; i <= squareCountY; i++) {
+        ctx.beginPath(); ctx.moveTo(0, size * i); ctx.lineTo(canvas.width, size * i); ctx.stroke();
     }
 };
+
 let drawCurrentTetris = () => {
     for (let i = 0; i < currentShape.template.length; i++) {
         for (let j = 0; j < currentShape.template.length; j++) {
@@ -290,38 +257,35 @@ let drawSquares = () => {
 
 
 let drawNextShape = () => {
-    nctx.fillStyle = "#ddcaf2";
-    nctx.fillRect(0, 0, nextShapeCanvas.width, nextShapeCanvas.height);
+    nctx.clearRect(0, 0, nextShapeCanvas.width, nextShapeCanvas.height);
+    let offsetX = (nextShapeCanvas.width - (nextShape.template.length * size)) / 2;
+    let offsetY = (nextShapeCanvas.height - (nextShape.template.length * size)) / 2;
+    
     for (let i = 0; i < nextShape.template.length; i++) {
-        for (let j = 0; j < nextShape.template.length; j++) {
+        for (let j = 0; j < nextShape.template[i].length; j++) {
             if (nextShape.template[i][j] == 0) continue;
             nctx.drawImage(
-                image,
-                nextShape.imageX,
-                nextShape.imageY,
-                imageSquareSize,
-                imageSquareSize,
-                size * i,
-                size * j + size,
-                size,
-                size
+                image, nextShape.imageX, nextShape.imageY, imageSquareSize, imageSquareSize,
+                offsetX + size * i, offsetY + size * j, size, size
             );
         }
     }
 };
-
 let drawGameOver = () => {
-
-    ctx.fillStyle = "black";
-    ctx.font = "64px Poppins";
-    ctx.fillText("Game Over !", 30, canvas.height / 2);
+    ctx.fillStyle = "rgba(0,0,0,0.75)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#c1e5c4";
+    ctx.font = "bold 38px 'Segoe UI'";
+    ctx.textAlign = "center";
+    ctx.fillText("Game Over!", canvas.width / 2, canvas.height / 2);
 };
 
 let drawScore = () => {
     sctx.clearRect(0, 0, scoreCanvas.width, scoreCanvas.height);
-    sctx.fillStyle = "black";
-    sctx.font = "64px Poppins";
-    sctx.fillText(score, 10, 50);
+    sctx.fillStyle = "#ffffff";
+    sctx.font = "bold 32px 'Segoe UI'";
+    sctx.textAlign = "center";
+    sctx.fillText(score, scoreCanvas.width / 2, 55);
 };
 
 let draw = () => {
@@ -337,26 +301,29 @@ let draw = () => {
 };
 
 let getRandomShape = () => {
-    return Object.create(shapes[Math.floor(Math.random() * shapes.length)])
+    let rand = Math.floor(Math.random() * shapesData.length);
+    let base = shapesData[rand];
+    let clonedTemplate = base.template.map(row => [...row]);
+    return new Tetris(base.imageX, base.imageY, clonedTemplate);
 };
 
 let resetVars = () => {
-    initialTwoDarr = []
+    gameMap = [];
     for (let i = 0; i < squareCountY; i++) {
         let temp = [];
         for (let j = 0; j < squareCountX; j++) {
             temp.push({ imageX: -1, imageY: -1 });
         }
-        initialTwoDarr.push(temp);
+        gameMap.push(temp);
     }
     score = 0;
     gameOver = false;
     currentShape = getRandomShape();
     nextShape = getRandomShape();
-    gameMap = initialTwoDarr;
 };
 
 window.addEventListener("keydown", (event) => {
+    if (gameOver) return;
     if (event.keyCode == 37)
         currentShape.moveLeft();
     else if (event.keyCode == 38)
