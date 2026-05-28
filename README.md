@@ -64,4 +64,9 @@ const imageSquareSize = 24;   // Sprite dosyasından çekilen çerçevenin kayna
 ```
 
 ---
-*İyi eğlenceler! *
+*İyi eğlenceler!*
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/d8f19c60-79a1-4d5b-b3fa-7822c4daca63" width="280" alt="Ekran Resmi 1" />
+  <img src="https://github.com/user-attachments/assets/d13171ed-81e7-4eec-90a6-9e7856173a93" width="280" alt="Ekran Resmi 2" />
+</p>
